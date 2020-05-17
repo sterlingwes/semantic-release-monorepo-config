@@ -1,0 +1,21 @@
+{
+  "name": "semantic-release-monorepo-config",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/npm": "^7.0.2",
+    "semantic-release-monorepo": "^7.0.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5",
+    "semantic-release": "^16.0.0"
+  },
+  "peerDependencies": {
+    "semantic-release": ">=15.11.x"
+  }
+}
