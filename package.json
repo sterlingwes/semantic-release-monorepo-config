@@ -5,7 +5,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "node ./tests/runner"
+    "test": "node ./tests/runner",
+    "test:start-mock-servers": "./start-test-mock-servers.sh",
+    "test:stop-mock-servers": "./stop-test-mock-servers.sh"
   },
   "dependencies": {
     "@semantic-release/changelog": "^5.0.0",
