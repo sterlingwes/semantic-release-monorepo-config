@@ -1,6 +1,6 @@
 {
   "name": "semantic-release-monorepo-config",
-  "description": "",
+  "description": "Opinionated shareable config for semantic release in monorepos",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
