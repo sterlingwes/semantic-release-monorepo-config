@@ -28,5 +28,10 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
+      - name: Set git ident
+        run: |
+          git config --global user.email "test-runner@example.com"
+          git config --global user.name "Test Runner"
+
       - name: Run tests
         run: yarn test
