@@ -1,7 +1,7 @@
 const semanticReleaseNpm = require('@semantic-release/npm')
 const semanticReleaseGit = require('@semantic-release/git')
 const semanticReleaseGithub = require('@semantic-release/github')
-const semanticReleaseChanelog = require('@semantic-release/changelog')
+const semanticReleaseChangelog = require('@semantic-release/changelog')
 const {
   analyzeCommits,
   generateNotes,
@@ -24,6 +24,11 @@ const configure = (context) => ({
       },
     ],
   },
+})
+
+const githubConfig = (pluginConfig) => ({
+  ...pluginConfig,
+  successComment: false,
 })
 
 const commitMessageConfig = (pluginConfig) => ({
@@ -51,7 +56,7 @@ module.exports = {
       commitMessageConfig(pluginConfig),
       context
     )
-    await semanticReleaseChanelog.verifyConditions(pluginConfig, context)
+    await semanticReleaseChangelog.verifyConditions(pluginConfig, context)
     await semanticReleaseNpm.verifyConditions(
       publishConfig(pluginConfig),
       configure(context)
@@ -60,7 +65,7 @@ module.exports = {
   },
 
   prepare: async (pluginConfig, context) => {
-    await semanticReleaseChanelog.prepare(pluginConfig, context)
+    await semanticReleaseChangelog.prepare(pluginConfig, context)
     await semanticReleaseNpm.prepare(
       publishConfig(pluginConfig),
       configure(context)
@@ -81,5 +86,10 @@ module.exports = {
       publishConfig(pluginConfig),
       configure(context)
     )
+    await semanticReleaseGithub.addChannel(pluginConfig, context)
+  },
+
+  success: async (pluginConfig, context) => {
+    await semanticReleaseGithub.addChannel(githubConfig(pluginConfig), context)
   },
 }

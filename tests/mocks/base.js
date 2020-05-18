@@ -29,8 +29,8 @@ const readBody = (mockServerName, req) => {
   })
 }
 
-const isJson = (req) => {
-  return req.headers['content-type'] === 'application/json'
+const isJsonBody = (req) => {
+  return (req.headers['content-type'] || '').includes('application/json')
 }
 
 const createMockServer = (configuration) => {
@@ -39,47 +39,63 @@ const createMockServer = (configuration) => {
   const server = http.createServer((req, res) => {
     const { method, url, headers } = req
 
-    readBody(name, req).then((body) => {
-      let json
-      if (isJson(req)) {
-        json = JSON.parse(body)
-      }
+    const errorResponse = (message) => {
+      res.statusCode = 500
+      res.setHeader('Content-Type', 'text/plain')
+      res.end(message)
+    }
 
-      const requestDetails = {
-        headers,
-        method,
-        url,
-        body,
-        json,
-      }
+    readBody(name, req)
+      .then((body) => {
+        let json
+        if (isJsonBody(req)) {
+          json = JSON.parse(body)
+        }
 
-      console.log('received request', requestDetails)
+        const requestDetails = {
+          headers,
+          method,
+          url,
+          body,
+          json,
+        }
 
-      const defaultResponse = () => {
-        res.statusCode = 200
-        res.setHeader('Content-Type', 'application/json')
-        res.end(body)
-      }
+        console.log('received request', requestDetails)
 
-      if (typeof mockResponder === 'function') {
-        const { statusCode, jsonBody } = mockResponder(requestDetails).then(
-          (mockResponse) => {
-            if (!mockResponse) {
-              console.log('No mock response resolved for', method, url)
-              defaultResponse()
-              return
-            }
+        const defaultResponse = () => {
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'application/json')
+          res.end(body)
+        }
 
-            res.statusCode = mockResponse.statusCode
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify(mockResponse.jsonBody))
-          }
+        if (typeof mockResponder === 'function') {
+          mockResponder(requestDetails)
+            .then((mockResponse) => {
+              if (!mockResponse) {
+                console.log('No mock response resolved for', method, url)
+                defaultResponse()
+                return
+              }
+
+              res.statusCode = mockResponse.statusCode
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify(mockResponse.jsonBody))
+            })
+            .catch((e) => {
+              errorResponse(
+                `[${name}] failed to mock response url=${url} error=${e.message} stack=${e.stack}`
+              )
+            })
+          return
+        }
+
+        defaultResponse()
+      })
+      .catch((e) => {
+        errorResponse(
+          `[${name}] failed to parse request body url=${url} error=${e.message} stack=${e.stack}`
         )
-        return
-      }
-
-      defaultResponse()
-    })
+      })
   })
 
   server.listen(port, hostname)

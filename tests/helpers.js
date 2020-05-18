@@ -56,14 +56,34 @@ const listCommits = () => {
   return execInTestRepo('git log --pretty=format:"%s"')
 }
 
+const listTags = () => {
+  return execInBareRepo('git tag --list')
+}
+
+/**
+ * @typedef CommitOptions
+ * @property {String} commitMessage
+ * @property {String} content
+ * @property {String} file
+ */
+
 /**
  * appends text to a file & commits with the provided commit prefix
  * @param {string} packagePath (package-a, package-b)
  * @param {string} commitPrefix
+ * @param {CommitOptions} options
  */
-const commitChange = (packagePath, commitPrefix) => {
-  execInTestRepo(`echo "hello world" >> packages/${packagePath}/DONTREADME.md`)
-  gitCommit(`${commitPrefix}: add some changes`)
+const commitChange = (
+  packagePath,
+  commitPrefix,
+  { commitMessage, file, content } = {
+    commitMessage: 'add some changes',
+    file: 'DONTREADME.md',
+    content: 'hello world',
+  }
+) => {
+  execInTestRepo(`echo "${content}" >> packages/${packagePath}/${file}`)
+  gitCommit(`${commitPrefix}: ${commitMessage}`)
 }
 
 /**
@@ -131,6 +151,7 @@ module.exports = {
   gitCommit,
   runSemanticRelease,
   listCommits,
+  listTags,
   commitChange,
   assertRequestOccurred,
   assertRequestContains,
