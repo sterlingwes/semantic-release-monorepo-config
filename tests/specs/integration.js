@@ -42,8 +42,9 @@ module.exports = {
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `chore(release): 1.0.0
-fix: add some changes\n`
+    const expectedCommits = `chore(release): package-a-v1.0.0
+fix: add some changes
+`
 
     assert.equal(
       commitDiff,
@@ -76,7 +77,7 @@ fix: add some changes\n`
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `chore(release): 1.0.1
+    const expectedCommits = `chore(release): package-a-v1.0.1
 fix: add some changes
 `
 
@@ -95,6 +96,46 @@ fix: add some changes
     assertRequestContains({
       bodyContains: { name: 'package-a' },
       requestBody,
+    })
+  },
+
+  'when bumping both packages at once, should commit, tag and publish separately': () => {
+    const before = listCommits()
+    commitChange('package-a', 'feat')
+    commitChange('package-b', 'fix')
+    runSemanticRelease()
+    const after = listCommits()
+
+    const commitDiff = after.replace(before, '')
+    const expectedCommits = `chore(release): package-b-v1.0.0
+chore(release): package-a-v1.1.0
+fix: add some changes
+feat: add some changes
+`
+
+    assert.equal(
+      commitDiff,
+      expectedCommits,
+      'expect new release commit to be added'
+    )
+
+    const tags = listTags()
+    const expectedTags = `package-a-v1.0.0
+package-a-v1.0.1
+`
+    assert.equal(tags, expectedTags)
+
+    // assert that expected NPM publish event occurred
+    const packageA = assertRequestOccurred('npm', 'PUT', '/package-a')
+    assertRequestContains({
+      bodyContains: { 'dist-tags': { latest: '1.1.0' } },
+      requestBody: packageA,
+    })
+
+    const packageB = assertRequestOccurred('npm', 'PUT', '/package-b')
+    assertRequestContains({
+      bodyContains: { 'dist-tags': { latest: '1.0.0' } },
+      requestBody: packageB,
     })
   },
 }
