@@ -8,6 +8,10 @@ const createTestExecutor = (execute) => () => {
     execute()
     return result()
   } catch (err) {
+    console.log('test exec failure', err)
+    if (err.output) {
+      return result({ err: 'buffer error' })
+    }
     return result({ err })
   }
 }
