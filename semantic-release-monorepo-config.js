@@ -8,7 +8,7 @@ const {
   tagFormat,
 } = require('semantic-release-monorepo')
 
-const noPublishNpmConfig = (pluginConfig) => ({
+const publishConfig = (pluginConfig) => ({
   ...pluginConfig,
   npmPublish: true,
 })
@@ -53,7 +53,7 @@ module.exports = {
     )
     await semanticReleaseChanelog.verifyConditions(pluginConfig, context)
     await semanticReleaseNpm.verifyConditions(
-      noPublishNpmConfig(pluginConfig),
+      publishConfig(pluginConfig),
       configure(context)
     )
     await semanticReleaseGithub.verifyConditions(pluginConfig, context)
@@ -62,7 +62,7 @@ module.exports = {
   prepare: async (pluginConfig, context) => {
     await semanticReleaseChanelog.prepare(pluginConfig, context)
     await semanticReleaseNpm.prepare(
-      noPublishNpmConfig(pluginConfig),
+      publishConfig(pluginConfig),
       configure(context)
     )
     await semanticReleaseGit.prepare(commitMessageConfig(pluginConfig), context)
@@ -70,7 +70,7 @@ module.exports = {
 
   publish: async (pluginConfig, context) => {
     await semanticReleaseNpm.publish(
-      noPublishNpmConfig(pluginConfig),
+      publishConfig(pluginConfig),
       configure(context)
     )
     await semanticReleaseGithub.publish(pluginConfig, context)
@@ -78,7 +78,7 @@ module.exports = {
 
   addChannel: async (pluginConfig, context) => {
     await semanticReleaseNpm.addChannel(
-      noPublishNpmConfig(pluginConfig),
+      publishConfig(pluginConfig),
       configure(context)
     )
   },

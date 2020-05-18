@@ -1,7 +1,32 @@
 const assert = require('assert')
-const { runSemanticRelease, listCommits, commitChange } = require('../helpers')
+const {
+  exec,
+  execAsync,
+  runSemanticRelease,
+  listCommits,
+  commitChange,
+  assertRequestOccurred,
+  assertRequestContains,
+} = require('../helpers')
+
+const { mockRequestsPath } = require('../constants')
 
 module.exports = {
+  beforeAll: () => {
+    console.log('setting up integration test environment...')
+    exec(`rm -rf ${mockRequestsPath}`)
+    exec(`mkdir ${mockRequestsPath}`)
+    execAsync(`./start-test-mock-servers.sh`)
+    exec('node tests/setup')
+    console.log('done beforeAll... running tests')
+  },
+
+  afterAll: () => {
+    console.log('cleaning up test environment')
+    exec('node tests/teardown')
+    exec(`./stop-test-mock-servers.sh`)
+  },
+
   'with a brand new repo, should be a no-op': () => {
     const before = listCommits()
     runSemanticRelease()
@@ -16,14 +41,25 @@ module.exports = {
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `
-chore(release): 1.0.0
-fix: add some changes`
+    const expectedCommits = `chore(release): 1.0.0
+fix: add some changes
+`
 
     assert.equal(
       commitDiff,
       expectedCommits,
       'expect new release commit to be added'
     )
+
+    // assert that expected NPM publish event occurred
+    const requestBody = assertRequestOccurred('npm', 'PUT', '/package-a')
+    assertRequestContains({
+      bodyContains: { 'dist-tags': { latest: '1.0.0' } },
+      requestBody,
+    })
+    assertRequestContains({
+      bodyContains: { name: 'package-a' },
+      requestBody,
+    })
   },
 }
