@@ -122,6 +122,8 @@ feat: add some changes
     const tags = listTags()
     const expectedTags = `package-a-v1.0.0
 package-a-v1.0.1
+package-a-v1.1.0
+package-b-v1.0.0
 `
     assert.equal(tags, expectedTags)
 
