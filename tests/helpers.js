@@ -1,4 +1,4 @@
-const { execSync, exec: execAsync } = require('child_process')
+const { execSync, spawnSync: spawn } = require('child_process')
 const { readFileSync } = require('fs')
 const { AssertionError, deepEqual } = require('assert')
 
@@ -15,6 +15,9 @@ const exec = (...args) => execSync(...args).toString('utf-8')
 
 const execInTestRepo = (command, options) =>
   exec(command, { ...options, cwd: repoPath })
+
+const spawnInTestRepo = (command, args, options) =>
+  spawn(command, args, { ...options, cwd: repoPath })
 
 const execInBareRepo = (command, options) =>
   exec(command, { ...options, cwd: bareRepoPath })
@@ -36,20 +39,23 @@ const runSemanticRelease = () => {
     GITHUB_API_URL: `http://${mockServerHost}:${githubServerPort}`,
     NPM_CONFIG_REGISTRY: `http://${mockServerHost}:${npmServerPort}`,
   }
-  const stubEnv = Object.entries(env).reduce(
-    (envStr, [key, val]) => `${envStr} ${key}=${val}`,
-    ''
-  )
 
   let semanticReleaseCommand
+  let spawnOptions = {}
 
   if (process.env.DEBUG_SEMANTIC_RELEASE) {
-    semanticReleaseCommand = `${stubEnv} yarn workspaces run node inspect ../../node_modules/semantic-release/bin/semantic-release.js --no-ci -e semantic-release-monorepo-config`
+    semanticReleaseCommand = `workspaces run node inspect ../../node_modules/semantic-release/bin/semantic-release.js --no-ci -e semantic-release-monorepo-config`
+    spawnOptions = { ...spawnOptions, stdio: 'inherit' }
   } else {
-    semanticReleaseCommand = `${stubEnv} yarn workspaces run semantic-release --no-ci -e semantic-release-monorepo-config`
+    semanticReleaseCommand = `workspaces run semantic-release --no-ci -e semantic-release-monorepo-config`
   }
 
-  return execInTestRepo(semanticReleaseCommand)
+  const args = semanticReleaseCommand.split(' ')
+
+  return spawnInTestRepo('yarn', args, {
+    ...spawnOptions,
+    env: { ...process.env, ...env },
+  })
 }
 
 const listCommits = () => {
@@ -145,7 +151,6 @@ const assertRequestContains = ({ bodyContains, requestBody }) => {
 
 module.exports = {
   exec,
-  execAsync,
   execInTestRepo,
   execInBareRepo,
   gitCommit,

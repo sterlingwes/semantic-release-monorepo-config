@@ -59,15 +59,6 @@ createMockServer({
   mockResponder: async ({ method, url, json }) => {
     requestSequence += 1
 
-    if (method === 'GET' && url.includes(`repos/${repoName}`)) {
-      return {
-        statusCode: 200,
-        jsonBody: {
-          full_name: repoName,
-        },
-      }
-    }
-
     // mock create release
     //
     // return request sequence number b/c releaseId must be an integer to
@@ -85,12 +76,20 @@ createMockServer({
     }
 
     if (method === 'GET' && url.includes('releases/tags')) {
-      const urlParts = url.split('/')
-      const versionTag = urlParts.pop()
       return {
         statusCode: 200,
         jsonBody: {
-          id: versionTag,
+          id: requestSequence,
+        },
+      }
+    }
+
+    // this needs to be last of the "repos/" requests b/c of url path search/includes
+    if (method === 'GET' && url.includes(`repos/${repoName}`)) {
+      return {
+        statusCode: 200,
+        jsonBody: {
+          full_name: repoName,
         },
       }
     }
