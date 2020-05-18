@@ -35,7 +35,7 @@ module.exports = {
     assert.equal(before, after, 'expect no new commits')
   },
 
-  'with a package-a fix, should only bump package-a': () => {
+  'with a package-a fix, should only bump package-a & publish to NPM': () => {
     const before = listCommits()
     commitChange('package-a', 'fix')
     runSemanticRelease()
@@ -69,7 +69,7 @@ fix: add some changes\n`
     assert.equal(tags, expectedTags)
   },
 
-  'with another package-a fix, should patch bump': () => {
+  'with another package-a fix, should patch bump & publish to NPM': () => {
     const before = listCommits()
     commitChange('package-a', 'fix')
     runSemanticRelease()
