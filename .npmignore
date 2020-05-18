@@ -1,0 +1,5 @@
+tests/
+mock-server-requests/
+.prettierrc
+tsconfig.json
+.github/
