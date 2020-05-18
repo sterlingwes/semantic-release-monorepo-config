@@ -48,16 +48,6 @@ const installDependencies = () => {
 
   execInTestRepo(`yarn --cache-folder ../${yarnCacheFolder}`)
 
-  console.log('==== debugging deps')
-
-  execInTestRepo(
-    "sed  -i '' -e 's/options =/console.log(options);options =/g' node_modules/@octokit/rest/lib/constructor.js"
-  )
-
-  execInTestRepo(
-    "sed -i '' 's/debug[(]/throw new Error(JSON.stringify({ pluginConfig, githubToken, githubUrl, owner, repo }));debug(/g' node_modules/@semantic-release/github/lib/publish.js"
-  )
-
   gitCommit('add semantic-release and monorepo config')
 }
 

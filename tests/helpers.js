@@ -37,8 +37,15 @@ const runSemanticRelease = () => {
     (envStr, [key, val]) => `${envStr} ${key}=${val}`,
     ''
   )
-  // const semanticReleaseCommand = `${stubEnv} yarn workspaces run node inspect ../../node_modules/semantic-release/bin/semantic-release.js --no-ci -e semantic-release-monorepo-config`
-  const semanticReleaseCommand = `${stubEnv} yarn workspaces run semantic-release --no-ci -e semantic-release-monorepo-config`
+
+  let semanticReleaseCommand
+
+  if (process.env.DEBUG_SEMANTIC_RELEASE) {
+    semanticReleaseCommand = `${stubEnv} yarn workspaces run node inspect ../../node_modules/semantic-release/bin/semantic-release.js --no-ci -e semantic-release-monorepo-config`
+  } else {
+    semanticReleaseCommand = `${stubEnv} yarn workspaces run semantic-release --no-ci -e semantic-release-monorepo-config`
+  }
+
   return execInTestRepo(semanticReleaseCommand)
 }
 

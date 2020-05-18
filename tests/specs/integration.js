@@ -10,9 +10,20 @@ module.exports = {
   },
 
   'with a package-a fix, should only bump package-a': () => {
+    const before = listCommits()
     commitChange('package-a', 'fix')
     const result = runSemanticRelease()
-    console.log('result:', result)
-    console.log(listCommits())
+    const after = listCommits()
+
+    const commitDiff = after.replace(before, '')
+    const expectedCommits = `
+chore(release): 1.0.0
+fix: add some changes`
+
+    assert.equal(
+      commitDiff,
+      expectedCommits,
+      'expect new release commit to be added'
+    )
   },
 }
