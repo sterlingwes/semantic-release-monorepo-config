@@ -5,9 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "node ./tests/runner",
-    "test:start-mock-servers": "./start-test-mock-servers.sh",
-    "test:stop-mock-servers": "./stop-test-mock-servers.sh"
+    "test": "./run-tests.sh"
   },
   "dependencies": {
     "@semantic-release/changelog": "^5.0.0",
@@ -16,8 +14,10 @@
     "semantic-release-monorepo": "^7.0.2"
   },
   "devDependencies": {
+    "git-http-backend": "^1.0.2",
     "prettier": "^2.0.5",
-    "semantic-release": "^16.0.0"
+    "semantic-release": "^16.0.0",
+    "typescript": "^3.9.2"
   },
   "peerDependencies": {
     "semantic-release": ">=15.11.x"

@@ -1,8 +1,8 @@
 const { createTestExecutor } = require('./harness')
-const Units = require('./unit')
+const Tests = require('../specs')
 
-const unitTestSuites = Object.keys(Units).map((suiteName) => {
-  const suiteExports = Units[suiteName]
+const unitTestSuites = Object.keys(Tests).map((suiteName) => {
+  const suiteExports = Tests[suiteName]
   return Object.keys(suiteExports).map((unitName) => ({
     suiteName,
     unitName,
