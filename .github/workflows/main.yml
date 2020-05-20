@@ -35,3 +35,9 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
+      - name: Release
+        run: yarn semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
