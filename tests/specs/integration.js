@@ -42,7 +42,7 @@ module.exports = {
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `chore(release): package-a-v1.0.0
+    const expectedCommits = `chore(release): package-a-v1.0.0 [skip ci]
 fix: add some changes
 `
 
@@ -77,7 +77,7 @@ fix: add some changes
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `chore(release): package-a-v1.0.1
+    const expectedCommits = `chore(release): package-a-v1.0.1 [skip ci]
 fix: add some changes
 `
 
@@ -107,8 +107,8 @@ fix: add some changes
     const after = listCommits()
 
     const commitDiff = after.replace(before, '')
-    const expectedCommits = `chore(release): package-b-v1.0.0
-chore(release): package-a-v1.1.0
+    const expectedCommits = `chore(release): package-b-v1.0.0 [skip ci]
+chore(release): package-a-v1.1.0 [skip ci]
 fix: add some changes
 feat: add some changes
 `
