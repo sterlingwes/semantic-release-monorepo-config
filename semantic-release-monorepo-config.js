@@ -8,11 +8,9 @@ const {
   tagFormat,
 } = require('semantic-release-monorepo')
 
-const shouldPublish = process.argv.includes('--npm-publish')
-
 const publishConfig = (pluginConfig) => ({
   ...pluginConfig,
-  npmPublish: shouldPublish,
+  // Additional config can be included here
 })
 
 const configure = (context) => ({
@@ -21,8 +19,7 @@ const configure = (context) => ({
     ...(context.options || {}),
     publish: [
       {
-        path: '@semantic-release/npm',
-        npmPublish: shouldPublish,
+        path: '@semantic-release/npm'
       },
     ],
   },

@@ -29,7 +29,7 @@ const execInBareRepo = (command, options) =>
 const gitCommit = (commitMessage) =>
   execInTestRepo(`git add . && git commit -qm "${commitMessage}"`)
 
-const runSemanticRelease = ({ publish } = { publish: true }) => {
+const runSemanticRelease = () => {
   const env = {
     GITHUB_ACTION: 'some-id',
     NPM_TOKEN: 'some-npm-token',
@@ -51,9 +51,6 @@ const runSemanticRelease = ({ publish } = { publish: true }) => {
   }
 
   const args = semanticReleaseCommand.split(' ')
-  if (publish) {
-    args.push('--npm-publish')
-  }
 
   return spawnInTestRepo('yarn', args, {
     ...spawnOptions,
